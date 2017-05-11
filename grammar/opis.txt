@@ -1,0 +1,17 @@
+Marta Rożek
+360953
+
+Język jest oparty na składni haskella, nie dodałam żadnych własnych konstrukcji.
+Korzystałam z oficjalnej gramatyki haskella i gramatyki latte.
+Na razie celuję w 16 punktów, z nadzieją na rozszerzenie zakresu w trakcie
+pisania interpretera.
+
+Obecny zakres:
+ - dwa typy: Int, Bool,
+ - arytmetyka, porównania,
+ - deklaratywny if,
+ - funkcje wieloargumentowe, rekurencja,
+ - funkcje anonimowe, częściowa aplikacja i funkcje wyższego rzędu,
+ - listy:
+   * pattern matching [], x:xs,
+   * konstruktory x:xs, [x,y].
