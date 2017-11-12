@@ -1,5 +1,7 @@
 module Interpreter where
 
+import Debug.Trace
+
 import Control.Monad.Identity
 import Control.Monad.Except
 import Control.Monad.Reader
@@ -45,10 +47,10 @@ evalDecl (VarDecl ident expr) = do val <- evalExpr expr
                                    return (ident,val)
 evalDecl (FunDecl typesig ident (arg:args) body) =
     do env <- ask
-       let expr = foldl (\b a -> (ELambda [a] b)) body args
+       let expr = packArgs args body
            f    = FunVal env' arg expr
            env' = Map.insert ident f env
-           in return (ident, f)
+       return (ident,f)
 
 evalExpr :: Expr -> Eval Value
 evalExpr (ELitInt n) = return $ IntVal n
@@ -120,13 +122,11 @@ evalExpr (EListConsB e es) =
            (ListVal _,_) -> throwError "list instead of a single value in list constructor"
            (v,ListVal l) -> return $ ListVal (v:l)
            _             -> throwError "single value instead of a list in list constructor"
-evalExpr (EIf eC eA eB) =
+evalExpr (EIf eC a b) =
     do c <- evalExpr eC
-       a <- evalExpr eA
-       b <- evalExpr eB
        case c of
-           (BoolVal c) -> if c then return a else return b
-           _           -> throwError "if condition is a non boolean expression"
+           (BoolVal cond) -> if cond then evalExpr a else evalExpr b
+           _              -> throwError "if condition is a non boolean expression"
 evalExpr (EFunApp eF eX) =
     do f <- evalExpr eF
        case f of
@@ -136,8 +136,7 @@ evalExpr (EFunApp eF eX) =
            _                       -> throwError ("non functional expression in function application: " ++ show f)
 evalExpr (ELambda (arg:args) body) =
     do env <- ask
-       let expr = foldl (\b a -> (ELambda [a] b)) body args
-           in return $ FunVal env arg expr
+       return $ FunVal env arg (packArgs args body)
 evalExpr (ELet decls expr) =
     do env <- ask
        ds <- evalLetDecls decls
@@ -145,6 +144,9 @@ evalExpr (ELet decls expr) =
        local (const env') (evalExpr expr)
 evalExpr (ECase expr alts) = do val <- evalExpr expr
                                 findMatch val alts
+
+packArgs :: [Ident] -> Expr -> Expr
+packArgs args body = foldl (\b a -> (ELambda [a] b)) body args
 
 findMatch :: Value -> [PatExpr] -> Eval Value
 findMatch _ [] = throwError "pattern matching in case expression failed"

@@ -1,0 +1,91 @@
+Program. Prog ::= [Decl] ;
+terminator nonempty Decl ";" ;
+
+-- expressions ---------------------------------------------
+
+EOr.        Expr  ::= Expr1 "||" Expr ;
+EAnd.       Expr1 ::= Expr2 "&&" Expr1 ;
+
+ERel.       Expr2 ::= Expr2 RelOp Expr3 ;
+
+EAdd.       Expr3 ::= Expr3 AddOp Expr4 ;
+EMul.       Expr4 ::= Expr4 MulOp Expr5 ;
+
+Not.        Expr5 ::= "!" Expr6 ;
+Neg.        Expr5 ::= "-" Expr6 ;
+
+EVar.       Expr6 ::= Ident ;
+ELitInt.    Expr6 ::= Integer ;
+ELitTrue.   Expr6 ::= "True" ;
+ELitFalse.  Expr6 ::= "False" ;
+
+EListConsE. Expr6 ::= "[]" ;
+EListConsA. Expr6 ::= "[" [Expr] "]" ;
+EListConsB. Expr ::= Expr1 ":" Expr ;
+
+CaseAlt. PatExpr ::= Pat "->" Expr ;
+terminator nonempty PatExpr ";" ;
+ECase.      Expr ::= "case" Expr "of" [PatExpr] ;
+
+ELet.       Expr ::= "let" [Decl] "in" Expr ;
+ELambda.    Expr ::= "\\" [Ident] "->" Expr ;
+EIf.        Expr ::= "if" Expr "then" Expr "else" Expr ;
+EFunApp.    Expr5 ::= Expr5 Expr6 ;
+
+separator nonempty Expr "," ;
+
+coercions  Expr 6 ;
+
+-- operators -----------------------------------------------
+
+Plus.      AddOp ::= "+" ;
+Minus.     AddOp ::= "-" ;
+Times.     MulOp ::= "*" ;
+Div.       MulOp ::= "/" ;
+Mod.       MulOp ::= "%" ;
+
+LTH.       RelOp ::= "<" ;
+LE.        RelOp ::= "<=" ;
+GTH.       RelOp ::= ">" ;
+GE.        RelOp ::= ">=" ;
+EQU.       RelOp ::= "==" ;
+NE.        RelOp ::= "/=" ;
+
+-- types ---------------------------------------------------
+
+TypeSign.   TypeSig ::= Ident "::" Type ;
+
+FunType.       Type ::= Type1 "->" Type ;
+
+IntType.      Type1 ::= "Int" ;
+BoolType.     Type1 ::= "Bool" ;
+TypeList.     Type1 ::= "[" Type1 "]" ;
+
+coercions Type 1 ;
+
+-- patterns ------------------------------------------------
+
+rules Lit ::= Integer | "True" | "False" ;
+
+PatLit.   Pat1 ::= Lit ;
+PatVar.   Pat1 ::= Ident ;
+PatDummy. Pat1 ::= "_" ;
+PatListE. Pat1 ::= "[]" ;
+PatListA. Pat1 ::= "[" [Pat] "]" ;
+PatListB. Pat ::= Pat1 ":" Pat ;
+
+separator nonempty Pat "," ;
+
+coercions Pat 1 ;
+
+-- declarations --------------------------------------------
+
+FunDecl. Decl ::= TypeSig Ident [Ident] "=" Expr ;
+VarDecl. Decl ::= Ident "=" Expr ;
+
+separator nonempty Ident "" ;
+
+-- comments ------------------------------------------------
+
+comment "--" ;
+comment "{-" "-}" ;

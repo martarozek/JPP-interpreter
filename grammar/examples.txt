@@ -1,0 +1,22 @@
+1. Defining functions, pattern-matching on lists, two types: Int, Bool.
+
+    f :: [Int] -> Bool
+    f l = case l of
+	      [] -> False;
+              (x:xs) -> (x > 0);
+
+2. Higher-order functions, comparisons, anonymous functions, functions with many arguments.
+
+    f :: [Int] -> Int -> [Int]
+    f l n = filter (\ x -> x > n) l;
+
+3. Declarative if, recursion, arithmetic.
+
+    f :: Int -> Int -> Int
+    f x n = if x >= n then x else f x*2 n;
+
+4. Partial application.
+
+    f :: Int -> ([Int] -> [Int])
+    f n = filter (\ x -> x > n);
+

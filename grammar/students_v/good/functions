@@ -1,0 +1,9 @@
+f :: Int -> Int -> Bool
+f x y = let comp = \ a b -> a < b;
+	in comp x y;
+
+g :: (Int -> Int -> Bool) -> (Int -> Bool)
+g fun = fun 11;
+
+main = g f 1;
+

@@ -1,0 +1,8 @@
+f :: [Int] -> Int
+f l = case l of
+	[] -> 42;
+	(x:xs) -> x;
+;
+
+main = f (0:[1,2]);
+
